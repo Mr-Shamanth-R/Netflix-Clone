@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import SDWebImage
 
 class HeroHeaderUIView: UIView {
+    
+    let baseURL = "https://image.tmdb.org/t/p/w500/"
     
     private let playButton: UIButton = {
        let button = UIButton()
@@ -40,6 +43,12 @@ class HeroHeaderUIView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpHeaderView()
+    }
+    
+    public func configureHeroImageView(with posterString: String) {
+        guard let url = URL(string: "\(baseURL)\(posterString)") else { return }
+        print(url)
+        heroImageView.sd_setImage(with: url)
     }
     
     required init?(coder: NSCoder) {
