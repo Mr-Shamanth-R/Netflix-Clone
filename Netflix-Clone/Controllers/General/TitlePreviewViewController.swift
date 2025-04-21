@@ -11,7 +11,7 @@ import WebKit
 class TitlePreviewViewController: UIViewController {
     
     private let titleLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 22, weight: .bold)
         label.text = "harry potter"
@@ -28,8 +28,8 @@ class TitlePreviewViewController: UIViewController {
         return label
     }()
     
-    private let downloadButton: UIButton = {
-       let button = UIButton()
+    let downloadButton: UIButton = {
+        let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .red
         button.setTitle("Download", for: .normal)
@@ -49,11 +49,34 @@ class TitlePreviewViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
-
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
+//        setUpNavBar()
+    }
+    
+    private func setUpNavBar() {
+        let backButton = UIButton(type: .system)
+        backButton.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+        backButton.setTitle("Back", for: .normal)
+        backButton.setTitleColor(.white, for: .normal)
+        backButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        backButton.tintColor = .white
+        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+
+        // Make the button size fit its content
+        backButton.sizeToFit()
+
+        let leftBarButton = UIBarButtonItem(customView: backButton)
+        navigationController?.isNavigationBarHidden = true
+        navigationController?.navigationBar.tintColor = .white
+    }
+    
+    @objc func didTapBackButton() {
+        // If pushed via UINavigationController
+        dismiss(animated: true, completion: nil)
     }
     
     private func setUpUI() {
@@ -67,7 +90,7 @@ class TitlePreviewViewController: UIViewController {
     
     private func setUpConstraints() {
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             webView.heightAnchor.constraint(equalToConstant: 350),

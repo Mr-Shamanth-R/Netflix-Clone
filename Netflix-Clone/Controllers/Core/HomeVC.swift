@@ -52,6 +52,7 @@ class HomeVC: UIViewController {
     }
     
     private func setUpTableHeaderView() {
+        title = "𝐍𝐄𝐓𝐅𝐋𝚰𝐗"
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
         APICaller.shared.getTrendingMoveis { [weak self] result in
@@ -173,6 +174,7 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
 extension HomeVC: CollectionViewTableViewCellDelegate {
     func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
         DispatchQueue.main.async { [weak self] in
+            self?.navigationController?.navigationBar.transform = .identity
             let vc = TitlePreviewViewController()
             vc.configure(with: viewModel)
             self?.navigationController?.pushViewController(vc, animated: true)

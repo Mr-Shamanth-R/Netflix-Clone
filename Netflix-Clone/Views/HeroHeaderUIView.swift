@@ -47,7 +47,6 @@ class HeroHeaderUIView: UIView {
     
     public func configureHeroImageView(with posterString: String) {
         guard let url = URL(string: "\(baseURL)\(posterString)") else { return }
-        print(url)
         heroImageView.sd_setImage(with: url)
     }
     

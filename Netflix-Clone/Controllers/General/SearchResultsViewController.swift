@@ -11,7 +11,6 @@ protocol SearchResultsViewControllerDelegate: AnyObject {
     func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel)
 }
 
-
 class SearchResultsViewController: UIViewController {
     
     public var titles: [Title] = []

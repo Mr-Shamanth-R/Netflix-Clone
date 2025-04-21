@@ -127,8 +127,10 @@ extension SearchVC: UISearchResultsUpdating, SearchResultsViewControllerDelegate
     }
     
     func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
-        let vc = TitlePreviewViewController()
-        vc.configure(with: viewModel)
-        navigationController?.pushViewController(vc, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            let vc = TitlePreviewViewController()
+            vc.configure(with: viewModel)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

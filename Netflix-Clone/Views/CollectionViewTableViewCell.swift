@@ -56,6 +56,16 @@ class CollectionViewTableViewCell: UITableViewCell {
         }
     }
     
+    private func downloadTitleAt(indexPath: IndexPath) {
+        DataPersistenceManager.shared.downloadTitle(with: titles[indexPath.row]) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "downloaded"), object: nil)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
 }
 
 extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -80,11 +90,24 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
             case .success(let videoElement):
                 let viewModel = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? "")
                 guard let self else { return }
-                delegate?.CollectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
+                self.delegate?.CollectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
-        
+    }
+}
+
+extension CollectionViewTableViewCell {
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let config = UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil) { [weak self] _ in
+                let downloadAction = UIAction(title: "Download", subtitle: nil, image: nil, identifier: nil, discoverabilityTitle: nil, state: .off) { _ in
+                    self?.downloadTitleAt(indexPath: indexPath)
+                }
+                return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [downloadAction])
+            }
+        return config
     }
 }
