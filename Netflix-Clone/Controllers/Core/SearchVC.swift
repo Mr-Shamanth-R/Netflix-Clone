@@ -46,6 +46,8 @@ class SearchVC: UIViewController {
     
     private func setUpTableView() {
         view.addSubview(discoverTable)
+        discoverTable.showsVerticalScrollIndicator = false
+        discoverTable.showsHorizontalScrollIndicator = false
         discoverTable.delegate = self
         discoverTable.dataSource = self
         fetchDiscoverMovies()
@@ -79,6 +81,14 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
         let title = titles[indexPath.row]
+        APICaller.shared.getMovieTrailers(with: title.original_title ?? "" + "trailer") { result in
+            switch result {
+            case .success(let videoElement):
+                cell.configureTitlePreviewViewModel(with: TitlePreviewViewModel(title: title.original_title ?? "", youtubeView: videoElement, titleOverView: title.overview ?? ""))
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
         cell.configure(with: TitleViewModel(titleName: title.original_name ?? title.original_title ?? "Unknown", posterURL: title.poster_path ?? ""))
         return cell
     }
@@ -96,6 +106,7 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource {
             case .success(let videoElement):
                 DispatchQueue.main.async {
                     let vc = TitlePreviewViewController()
+                    vc.updateTitlesForDownload(with: title)
                     vc.configure(with: TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? ""))
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -126,9 +137,10 @@ extension SearchVC: UISearchResultsUpdating, SearchResultsViewControllerDelegate
         }
     }
     
-    func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
+    func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel, title: Title) {
         DispatchQueue.main.async { [weak self] in
             let vc = TitlePreviewViewController()
+            vc.updateTitlesForDownload(with: title)
             vc.configure(with: viewModel)
             self?.navigationController?.pushViewController(vc, animated: true)
         }

@@ -11,7 +11,9 @@ import SDWebImage
 class HeroHeaderUIView: UIView {
     
     let baseURL = "https://image.tmdb.org/t/p/w500/"
-    
+        
+    private var titles: [Title] = []
+        
     private let playButton: UIButton = {
        let button = UIButton()
         button.setTitle("Play", for: .normal)
@@ -50,6 +52,10 @@ class HeroHeaderUIView: UIView {
         heroImageView.sd_setImage(with: url)
     }
     
+    public func updateTitlesForDownload(with title: Title) {
+        titles.append(title)
+    }
+
     required init?(coder: NSCoder) {
         fatalError()
     }
@@ -64,7 +70,36 @@ class HeroHeaderUIView: UIView {
         addGradiant()
         addSubview(playButton)
         addSubview(downloadButton)
+        playButton.addTarget(self, action: #selector(didTapPlayButton), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(downloadTitle), for: .touchUpInside)
         addConstraints()
+    }
+    
+    @objc private func downloadTitle() {
+        guard let title = titles.first else { return }
+        DataPersistenceManager.shared.downloadTitle(with: title) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "downloaded"), object: nil)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    @objc private func didTapPlayButton() {
+        guard let title = titles.first else { return }
+        guard let titleName = title.original_title ?? title.original_name else { return }
+        APICaller.shared.getMovieTrailers(with: titleName + "trailer") { result in
+            switch result {
+            case .success(let videoElement):
+                if let url = URL(string: "https://www.youtube.com/embed/\(videoElement.id.videoId)") {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func addGradiant() {

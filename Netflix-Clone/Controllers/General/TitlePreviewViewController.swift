@@ -10,12 +10,15 @@ import WebKit
 
 class TitlePreviewViewController: UIViewController {
     
+    var titles: [Title] = []
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 22, weight: .bold)
         label.text = "harry potter"
         label.numberOfLines = 0
+        label.textAlignment = .center
         return label
     }()
     
@@ -42,6 +45,7 @@ class TitlePreviewViewController: UIViewController {
     private let webView: WKWebView = {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
+        config.mediaTypesRequiringUserActionForPlayback = []
         let webpagePreferences = WKWebpagePreferences()
         webpagePreferences.allowsContentJavaScript = true
         config.defaultWebpagePreferences = webpagePreferences
@@ -49,7 +53,6 @@ class TitlePreviewViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,6 +73,7 @@ class TitlePreviewViewController: UIViewController {
         backButton.sizeToFit()
 
         let leftBarButton = UIBarButtonItem(customView: backButton)
+        navigationController?.navigationItem.leftBarButtonItem = leftBarButton
         navigationController?.isNavigationBarHidden = true
         navigationController?.navigationBar.tintColor = .white
     }
@@ -85,6 +89,7 @@ class TitlePreviewViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(overViewLabel)
         view.addSubview(downloadButton)
+        downloadButton.addTarget(self, action: #selector(downloadTitle), for: .touchUpInside)
         setUpConstraints()
     }
     
@@ -116,5 +121,21 @@ class TitlePreviewViewController: UIViewController {
         overViewLabel.text = model.titleOverView
         guard let url = URL(string: "https://www.youtube.com/embed/\(model.youtubeView.id.videoId)") else { return }
         webView.load(URLRequest(url: url))
+    }
+
+    public func updateTitlesForDownload(with title: Title) {
+        titles.append(title)
+    }
+    
+    @objc private func downloadTitle() {
+        guard let title = titles.first else { return }
+        DataPersistenceManager.shared.downloadTitle(with: title) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "downloaded"), object: nil)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }

@@ -25,6 +25,7 @@ class DownloadsVC: UIViewController {
         fetchLocalStrorageForDownload()
         NotificationCenter.default.addObserver(forName: NSNotification.Name("downloaded"), object: nil, queue: nil) { [weak self] _ in
             self?.fetchLocalStrorageForDownload()
+            self?.downloadedTable.reloadData()
         }
     }
     
@@ -37,6 +38,8 @@ class DownloadsVC: UIViewController {
     
     private func setUpTableView() {
         view.addSubview(downloadedTable)
+        downloadedTable.showsVerticalScrollIndicator = false
+        downloadedTable.showsHorizontalScrollIndicator = false
         downloadedTable.delegate = self
         downloadedTable.dataSource = self
     }
@@ -66,6 +69,14 @@ extension DownloadsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
         let title = titles[indexPath.row]
+        APICaller.shared.getMovieTrailers(with: title.original_title ?? "" + "trailer") { result in
+            switch result {
+            case .success(let videoElement):
+                cell.configureTitlePreviewViewModel(with: TitlePreviewViewModel(title: title.original_title ?? "", youtubeView: videoElement, titleOverView: title.overview ?? ""))
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
         cell.configure(with: TitleViewModel(titleName: title.original_title ?? title.original_name ?? "Unknown", posterURL: title.poster_path ?? ""))
         return cell
     }
