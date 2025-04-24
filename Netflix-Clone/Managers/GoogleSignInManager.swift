@@ -18,7 +18,7 @@ class GoogleSignInManager {
     }
 
     func signIn(presentingVC: UIViewController, completion: @escaping (Bool) -> Void) {
-        let clientID = "609860097382-d2ibo8gg0hki5odttttrl5c8d7cg53g0.apps.googleusercontent.com"
+        let clientID = "ClientID"
         let config = GIDConfiguration(clientID: clientID)
 
         GIDSignIn.sharedInstance.configuration = config
