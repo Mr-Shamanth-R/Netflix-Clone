@@ -46,6 +46,8 @@ class HomeVC: UIViewController {
     
     private func setUpTablewView() {
         view.addSubview(homeFeedTable)
+        homeFeedTable.showsVerticalScrollIndicator = false
+        homeFeedTable.showsHorizontalScrollIndicator = false
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         setUpTableHeaderView()
@@ -53,28 +55,42 @@ class HomeVC: UIViewController {
     
     private func setUpTableHeaderView() {
         title = "𝐍𝐄𝐓𝐅𝐋𝚰𝐗"
-        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         homeFeedTable.tableHeaderView = headerView
         APICaller.shared.getTrendingMoveis { [weak self] result in
             switch result {
             case .success(let titles):
-                let selectedTitle = titles.randomElement()
-                self?.randomTrendingMovie = selectedTitle
-                self?.headerView?.configureHeroImageView(with: selectedTitle?.poster_path ?? "")
+                guard let selectedTitle = titles.randomElement(), let self else { return }
+                randomTrendingMovie = selectedTitle
+                headerView?.configureHeroImageView(with: selectedTitle.poster_path ?? "")
+                headerView?.updateTitlesForDownload(with: selectedTitle)
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
+        navigationController?.navigationItem.largeTitleDisplayMode = .inline
     }
     
     private func setUpNavBar() {
         let image = UIImage(named: "netflixLogo")?.withRenderingMode(.alwaysOriginal)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
-            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: #selector(handleProfileButtonTap)),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: #selector(showUpComingVC))
         ]
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    @objc private func handleProfileButtonTap() {
+        DispatchQueue.main.async { [weak self] in
+            let vc = ProfileVC()
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    @objc private func showUpComingVC() {
+        let vc = UpcomingVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -172,11 +188,12 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension HomeVC: CollectionViewTableViewCellDelegate {
-    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
+    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel, title: Title) {
         DispatchQueue.main.async { [weak self] in
             self?.navigationController?.navigationBar.transform = .identity
             let vc = TitlePreviewViewController()
             vc.configure(with: viewModel)
+            vc.updateTitlesForDownload(with: title)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
     }

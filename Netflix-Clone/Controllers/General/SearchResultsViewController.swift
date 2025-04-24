@@ -8,7 +8,7 @@
 import UIKit
 
 protocol SearchResultsViewControllerDelegate: AnyObject {
-    func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel)
+    func SearchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel, title: Title)
 }
 
 class SearchResultsViewController: UIViewController {
@@ -39,6 +39,8 @@ class SearchResultsViewController: UIViewController {
     
     private func setUpSearchResultCollectionView() {
         view.addSubview(searchResultCollectionView)
+        searchResultCollectionView.showsVerticalScrollIndicator = false
+        searchResultCollectionView.showsHorizontalScrollIndicator = false
         searchResultCollectionView.delegate = self
         searchResultCollectionView.dataSource = self
     }
@@ -63,7 +65,7 @@ extension SearchResultsViewController: UICollectionViewDelegate, UICollectionVie
             switch result {
             case .success(let videoElement):
                 DispatchQueue.main.async {
-                    self?.delegate?.SearchResultsViewControllerDidTapItem(TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? ""))
+                    self?.delegate?.SearchResultsViewControllerDidTapItem(TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? ""), title: title)
                 }
             case .failure(let error):
                 print(error.localizedDescription)

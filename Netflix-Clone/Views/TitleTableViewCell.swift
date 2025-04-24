@@ -12,6 +12,8 @@ class TitleTableViewCell: UITableViewCell {
     static let identifier = "TitleTableViewCell"
     let baseURL = "https://image.tmdb.org/t/p/w500/"
     
+    var title: TitlePreviewViewModel?
+    
     private let titlePosterImageView: UIImageView = {
        let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -38,6 +40,7 @@ class TitleTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setpTitleTableView()
+        playButton.addTarget(self, action: #selector(openVideoInExternalBrowser), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -64,10 +67,20 @@ class TitleTableViewCell: UITableViewCell {
         ])
     }
     
+    public func configureTitlePreviewViewModel(with model: TitlePreviewViewModel) {
+        title = model
+    }
+    
     public func configure(with model: TitleViewModel) {
         guard let url = URL(string: "\(baseURL)\(model.posterURL)") else { return }
         titlePosterImageView.sd_setImage(with: url)
         titleLabel.text = model.titleName
+    }
+    
+    @objc private func openVideoInExternalBrowser() {
+        guard let id = title?.youtubeView.id.videoId,
+         let url = URL(string: "https://www.youtube.com/embed/\(id)") else { return }
+        UIApplication.shared.open(url)
     }
 
 }

@@ -39,6 +39,8 @@ class UpcomingVC: UIViewController {
     
     private func setUpTableView() {
         view.addSubview(upcomingTable)
+        upcomingTable.showsVerticalScrollIndicator = false
+        upcomingTable.showsHorizontalScrollIndicator = false
         upcomingTable.delegate = self
         upcomingTable.dataSource = self
     }
@@ -66,6 +68,14 @@ extension UpcomingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
         let title = titles[indexPath.row]
+        APICaller.shared.getMovieTrailers(with: title.original_title ?? "" + "trailer") { result in
+            switch result {
+            case .success(let videoElement):
+                cell.configureTitlePreviewViewModel(with: TitlePreviewViewModel(title: title.original_title ?? "", youtubeView: videoElement, titleOverView: title.overview ?? ""))
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
         cell.configure(with: TitleViewModel(titleName: title.original_title ?? title.original_name ?? "Unknown", posterURL: title.poster_path ?? ""))
         return cell
     }
@@ -83,6 +93,7 @@ extension UpcomingVC: UITableViewDelegate, UITableViewDataSource {
             case .success(let videoElement):
                 DispatchQueue.main.async {
                     let vc = TitlePreviewViewController()
+                    vc.updateTitlesForDownload(with: title)
                     vc.configure(with: TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? ""))
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }

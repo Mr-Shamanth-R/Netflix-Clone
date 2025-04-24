@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CollectionViewTableViewCellDelegate: AnyObject {
-    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel)
+    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel, title: Title)
 }
 
 class CollectionViewTableViewCell: UITableViewCell {
@@ -40,6 +40,8 @@ class CollectionViewTableViewCell: UITableViewCell {
     
     private func setUpCollectionView() {
         contentView.addSubview(collectionView)
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
     }
@@ -90,7 +92,7 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
             case .success(let videoElement):
                 let viewModel = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverView: title.overview ?? "")
                 guard let self else { return }
-                self.delegate?.CollectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
+                self.delegate?.CollectionViewTableViewCellDidTapCell(self, viewModel: viewModel, title: title)
             case .failure(let error):
                 print(error.localizedDescription)
             }

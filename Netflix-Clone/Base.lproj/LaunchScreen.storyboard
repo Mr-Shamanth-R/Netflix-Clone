@@ -17,18 +17,18 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splashScreen" translatesAutoresizingMaskIntoConstraints="NO" id="IPG-AQ-CMw">
-                                <rect key="frame" x="-14" y="-68" width="420" height="989"/>
+                                <rect key="frame" x="-21" y="-68.666666666666686" width="435" height="989.33333333333348"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="989" id="32O-TZ-VRM"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="IPG-AQ-CMw" secondAttribute="bottom" constant="-69" id="AQO-R7-2Pe"/>
-                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="-14" id="JAj-S3-3h6"/>
-                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="M2S-Pm-WqP"/>
-                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="YSU-Tn-KmS"/>
-                            <constraint firstAttribute="trailing" secondItem="IPG-AQ-CMw" secondAttribute="trailing" constant="-13" id="mYo-ck-UVZ"/>
-                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" constant="-68" id="vw6-5A-P8P"/>
+                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="1bx-c4-cxZ"/>
+                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-37" id="943-RY-BFc"/>
+                            <constraint firstItem="IPG-AQ-CMw" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="cXt-QZ-Ibn"/>
                         </constraints>
                     </view>
                 </viewController>
