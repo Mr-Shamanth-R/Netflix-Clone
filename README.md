@@ -45,7 +45,7 @@ A feature-packed Netflix Clone app that displays movies and shows in different c
 
 ## 📹 Demo Video
 
-Video Link: [Click here to watch the demo video](https://drive.google.com/file/d/1POaSyUg8xVbzpJplgHKOQkOWp2DGV8Nk/view?usp=sharing)
+Video Link: [Click here to watch the demo video](https://drive.google.com/file/d/1XIEltZtAuahn0t0PpxWIKFZBh49oz2LD/view?usp=sharing)
 
 ---
 
